@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashcam AI Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- ONNX Runtime Web -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.1/dist/ort.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <span class="icon">🚨</span>
+                <h1>Dashcam AI</h1>
+            </div>
+            <div class="status-badge" id="aiStatus">Loading Model...</div>
+        </header>
+
+        <main>
+            <div class="video-container glass-panel">
+                <video id="webcam" autoplay playsinline muted></video>
+                <canvas id="overlay"></canvas>
+                
+                <div class="alert-banner hidden" id="alertBanner">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-text">
+                        <h2>WARNING!</h2>
+                        <p>Police vehicle approach detected!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls glass-panel">
+                <div class="control-group">
+                    <label>Camera Selection (Rear Camera)</label>
+                    <select id="cameraSelect"></select>
+                </div>
+                <div class="action-buttons">
+                    <button id="startBtn" class="btn primary" disabled>Start AI</button>
+                    <button id="stopBtn" class="btn danger" disabled>Stop</button>
+                </div>
+                <div class="info-group">
+                    <span class="fps-counter">FPS: <span id="fpsValue">0</span></span>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Load custom logic -->
+    <script src="app.js"></script>
+</body>
+</html>
