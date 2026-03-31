@@ -2,9 +2,10 @@ import SwiftUI
 import Vision
 import CoreML
 import AVFoundation
+import Combine
 
 // MARK: - AI解析＆ストリーミング受信エンジン
-class DashcamAnalyzer: NSObject, ObservableObject, URLSessionDataDelegate {
+class DashcamAnalyzer: NSObject, ObservableObject {
     @Published var alertMessage: String = "待機中..."
     @Published var isAlerting: Bool = false
     
@@ -25,8 +26,7 @@ class DashcamAnalyzer: NSObject, ObservableObject, URLSessionDataDelegate {
     private func setupAI() {
         // Xcodeに yolov8n.mlpackage を入れると自動的にクラスが生成されるのでそれを読み込む
         // ※「yolov8n」の部分は実際のファイル名に合わせて変更します
-        if let config = MLModelConfiguration() as? MLModelConfiguration,
-           let mlModel = try? yolov8n(configuration: config).model {
+        if let mlModel = try? yolov8n(configuration: MLModelConfiguration()).model {
             self.yoloModel = try? VNCoreMLModel(for: mlModel)
         } else {
             print("⚠️ YOLOモデルの読み込みに失敗しました。Xcodeのプロジェクトに.mlpackageを追加してください。")
@@ -36,7 +36,7 @@ class DashcamAnalyzer: NSObject, ObservableObject, URLSessionDataDelegate {
     // 2. 古いスマホ（カメラ）への接続開始
     func startStream(url: String) {
         let config = URLSessionConfiguration.default
-        session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        session = URLSession(configuration: config, delegate: nil, delegateQueue: nil)
         if let streamURL = URL(string: url) {
             dataTask = session?.dataTask(with: streamURL)
             dataTask?.resume()
@@ -118,40 +118,5 @@ class DashcamAnalyzer: NSObject, ObservableObject, URLSessionDataDelegate {
             
             self.lastAlertTime = now
         }
-    }
-}
-
-// MARK: - アプリの画面UI（SwiftUI）
-struct ContentView: View {
-    @StateObject var analyzer = DashcamAnalyzer()
-    
-    var body: some View {
-        VStack(spacing: 30) {
-            Text("AI ドライブレコーダー")
-                .font(.largeTitle)
-                .bold()
-            
-            // 警告表示エリア
-            Text(analyzer.alertMessage)
-                .font(.title)
-                .foregroundColor(analyzer.isAlerting ? .white : .green)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(analyzer.isAlerting ? Color.red : Color.black)
-                .cornerRadius(15)
-            
-            Button(action: {
-                // 古いスマホのIPWebcamのURLを指定して監視スタート
-                analyzer.startStream(url: "http://192.168.0.10:8080/video")
-            }) {
-                Text("カメラ接続＆監視スタート")
-                    .font(.headline)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-        }
-        .padding()
     }
 }
