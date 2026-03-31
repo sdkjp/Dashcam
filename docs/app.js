@@ -28,6 +28,7 @@ const INPUT_DIM = 640;
 async function init() {
     try {
         ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.1/dist/';
+        ort.env.wasm.numThreads = 1;
         session = await ort.InferenceSession.create(ModelPath, { executionProviders: ['wasm'] });
         console.log("Model loaded.");
         statusBadge.textContent = "AI Ready";
