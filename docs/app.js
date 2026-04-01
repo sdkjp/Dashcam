@@ -27,7 +27,7 @@ const INPUT_DIM = 640;
 // Init ONNX Session
 async function init() {
     try {
-        ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.1/dist/';
+        ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
         ort.env.wasm.numThreads = 1;
         session = await ort.InferenceSession.create(ModelPath, { executionProviders: ['wasm'] });
         console.log("Model loaded.");
